@@ -29,6 +29,68 @@ The backend is built with:
 - CORS configuration for secure communication
 - API response display in the frontend
 - Error handling and loading states
+- Containerized with Docker for easy deployment
+- Optimized Docker images for production
+
+## Running with Docker Compose
+
+This project is fully containerized and can be run using Docker Compose.
+
+### Prerequisites
+
+- Docker and Docker Compose installed on your machine
+
+### Steps to Run
+
+1. Navigate to the project root directory
+2. Build and start the containers:
+
+```bash
+docker-compose up -d --build
+```
+
+3. Access the application:
+   - Frontend: http://localhost:8080
+   - Backend API: http://localhost:5001
+
+### Commands
+
+- Start containers: `docker-compose up -d`
+- Stop containers: `docker-compose down`
+- View logs: `docker-compose logs -f`
+- Rebuild containers: `docker-compose up -d --build`
+- View specific container logs: `docker-compose logs -f [service-name]`
+- Check container health: `docker ps`
+- Inspect container details: `docker inspect [container-id]`
+- Check image sizes: `docker images | grep via-ca`
+- Clean up unused containers: `docker system prune`
+- Clean up unused volumes: `docker volume prune`
+
+## Docker Optimization
+
+The Docker containers are optimized for:
+
+- Small image sizes using multi-stage builds (Frontend: ~50MB, Backend: ~128MB)
+- Security with non-root users where applicable
+- Resource constraints with limits on CPU and memory
+- Health checks for container monitoring
+- Production-ready configurations
+- Minimal dependencies to reduce attack surface
+
+### Frontend Container Optimization
+- Multi-stage build with separate dependency, build, and production stages
+- Alpine-based Node.js for building
+- Alpine-based Nginx for serving static content
+- Compressed static assets with gzip in Nginx
+- Optimized frontend build with production flags
+
+### Backend Container Optimization
+- Multi-stage build with SDK for building, runtime image for deployment
+- Alpine-based .NET images for smaller size
+- Environment variable optimization
+- Proper layering to maximize caching
+- Health check endpoints for monitoring
+- Minimal dependencies to reduce attack surface
 
 ## Running the Application
 

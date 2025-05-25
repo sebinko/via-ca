@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import config from './config'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,7 +14,7 @@ function App() {
     const fetchMessage = async () => {
       try {
         setLoading(true)
-        const response = await fetch('https://localhost:7118/api/message') 
+        const response = await fetch(`${config.apiBaseUrl}/message`) 
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
