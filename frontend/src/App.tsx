@@ -1,71 +1,25 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import config from './config'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import StoryList from './components/StoryList';
+import StoryForm from './components/StoryForm';
+import StoryDetail from './components/StoryDetail';
+import EditStoryForm from './components/EditStoryForm';
+import Navbar from './components/Navbar';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch(`${config.apiBaseUrl}/message`) 
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const data = await response.json()
-        setMessage(data.message)
-      } catch (err) {
-        setError('Failed to fetch message from backend: ' + (err instanceof Error ? err.message : String(err)))
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchMessage()
-  }, [])
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <BrowserRouter>
+      <div className="app-container">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<StoryList />} />
+          <Route path="/add-story" element={<StoryForm />} />
+          <Route path="/story/:id" element={<StoryDetail />} />
+          <Route path="/edit-story/:id" element={<EditStoryForm />} />
+        </Routes>
       </div>
-      <h1>Vite + React + C# API</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        
-        <div className="backend-message">
-          <h3>Backend Connection:</h3>
-          {loading ? (
-            <p>Loading message from backend...</p>
-          ) : error ? (
-            <p className="error">{error}</p>
-          ) : (
-            <p className="success">Message: {message}</p>
-          )}
-        </div>
-        
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

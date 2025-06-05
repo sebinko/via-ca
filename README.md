@@ -1,26 +1,108 @@
-# Simple Frontend + Backend Application
+# Via Tabloid Application
 
-A simple application consisting of a Vite TypeScript React frontend and a C# ASP.NET Core backend API, created for a DevOps assignment.
+A modern tabloid web application with features for managing news stories. Built with React, TypeScript, ASP.NET Core, and MS SQL Server.
 
-## Project Structure
+## Features
 
-This repository contains two main parts:
+- View, add, edit, and delete tabloid stories
+- Categorize stories and manage their publication status
+- Full-stack application with frontend and backend components
+- Responsive design for mobile and desktop viewing
 
-### Frontend (React + TypeScript + Vite)
+## Requirements
 
-The frontend is built with:
-- React 19
-- TypeScript
-- Vite 6
-- Modern ES modules
+- Docker and Docker Compose
+- .NET SDK 9.0 or later (for local development)
+- Node.js 18 or later (for local development)
+- npm (for local development)
 
-### Backend (ASP.NET Core)
+## Running the Application
 
-The backend is built with:
-- C# 12
-- ASP.NET Core 9.0
-- REST API principles
-- Controller-based architecture
+There are two ways to run this application:
+
+### 1. Using Docker (Recommended)
+
+This method runs everything in containers, including the frontend, backend, and database.
+
+```bash
+# Clone the repository (if you haven't already)
+git clone <repository-url>
+cd via-ca
+
+```bash
+# Clone the repository (if you haven't already)
+git clone <repository-url>
+cd via-ca
+
+# Run the helper script
+./run.sh
+# Select option 2 when prompted
+```
+
+This will start:
+- SQL Server in Docker (accessible at localhost:1434)
+- Backend API server at http://localhost:5001
+- Frontend development server with hot-reloading at http://localhost:5173
+
+## Database Connection
+
+- Connection string for Docker environment:
+  ```
+  Server=sqlserver;Database=TabloidDb;User Id=sa;Password=StrongP@ssw0rd!;TrustServerCertificate=True;
+  ```
+
+- Connection string for local development:
+  ```
+  Server=localhost,1434;Database=TabloidDb;User Id=sa;Password=StrongP@ssw0rd!;TrustServerCertificate=True;
+  ```
+
+## Architecture
+
+- **Frontend**: React + TypeScript + Vite
+  - React 19
+  - TypeScript
+  - Vite 6
+  - Modern ES modules
+
+- **Backend**: ASP.NET Core with Entity Framework Core
+  - C# 12
+  - ASP.NET Core 9.0
+  - REST API principles
+  - Controller-based architecture
+  
+- **Database**: Microsoft SQL Server (Azure SQL Edge for cross-platform compatibility)
+
+## Folder Structure
+
+```
+/
+├── frontend/           # React frontend application
+├── backend/            # ASP.NET Core API
+├── docker-compose.yml  # Docker configuration
+└── run.sh              # Helper script to run the application
+```
+
+## Development
+
+### Frontend Development
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend Development
+
+```bash
+cd backend
+dotnet restore
+dotnet run
+```
+
+## License
+
+[MIT](LICENSE)
 
 ## Features
 

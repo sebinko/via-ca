@@ -27,12 +27,19 @@ RUN adduser --disabled-password --gecos "" --no-create-home appuser && \
 # Install curl for healthcheck
 RUN apk --no-cache add curl
 
+# Install ICU for globalization
+RUN apk --no-cache add icu-libs
+
 # Copy built app
 COPY --from=build --chown=appuser:appuser /app/publish .
 
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://+:80
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    DOTNET_SYSTEM_GLOBALIZATION_USING_ICU=true \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 EXPOSE 80
 
 # Switch to non-root user
