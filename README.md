@@ -15,19 +15,15 @@ A modern tabloid web application with features for managing news stories. Built 
 - .NET SDK 9.0 or later (for local development)
 - Node.js 18 or later (for local development)
 - npm (for local development)
+- Minikube & kubectl (for Kubernetes deployments)
 
 ## Running the Application
 
-There are two ways to run this application:
+There are three ways to run this application:
 
 ### 1. Using Docker (Recommended)
 
 This method runs everything in containers, including the frontend, backend, and database.
-
-```bash
-# Clone the repository (if you haven't already)
-git clone <repository-url>
-cd via-ca
 
 ```bash
 # Clone the repository (if you haven't already)
@@ -43,6 +39,28 @@ This will start:
 - SQL Server in Docker (accessible at localhost:1434)
 - Backend API server at http://localhost:5001
 - Frontend development server with hot-reloading at http://localhost:5173
+
+### 2. Using Local Development Mode
+This mode runs the database in Docker and the frontend & backend locally:
+```bash
+# From project root
+./run.sh local
+```  
+🔹 SQL Server container (localhost:1434)  
+🔹 Backend API (http://localhost:5001)  
+🔹 Frontend (http://localhost:5173)
+
+### 3. Using Kubernetes (Minikube)
+Build and deploy into a local K8s cluster:
+```bash
+# From project root
+./run.sh minikube
+```  
+This will:
+1. Start Minikube and configure Docker CLI  
+2. Build & load images for backend & frontend  
+3. Apply k8s manifests (`k8s/` folder)  
+4. Launch the frontend service in your browser
 
 ## Database Connection
 
@@ -74,12 +92,14 @@ This will start:
 
 ## Folder Structure
 
-```
+```text
 /
 ├── frontend/           # React frontend application
 ├── backend/            # ASP.NET Core API
-├── docker-compose.yml  # Docker configuration
-└── run.sh              # Helper script to run the application
+├── init/               # SQL Server init scripts
+├── k8s/                # Kubernetes manifests
+├── docker-compose.yml  # Docker Compose configuration
+└── run.sh              # Helper script (modes: docker, local, minikube)
 ```
 
 ## Development
@@ -258,3 +278,19 @@ This project is for educational purposes.
 ## Contributors
 
 Created for a DevOps assignment.
+
+## Kubernetes Deployment
+
+All deployment YAMLs are under `k8s/`:
+- `secret.yaml`, `pvc.yaml`, `configmap.yaml`
+- `sqlserver-deployment.yaml` & `sqlserver-service.yaml`
+- `backend-deployment.yaml` & `backend-service.yaml`
+- `frontend-deployment.yaml` & `frontend-service.yaml`
+
+To deploy manually:
+```bash
+minikube start
+kubectl apply -f k8s/
+kubectl get all
+minikube service frontend-service
+```

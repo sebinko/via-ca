@@ -61,13 +61,45 @@ start_local() {
   echo -e "${GREEN}Frontend: ${NC}http://localhost:5173"
 }
 
+# Function to build images inside Minikube and deploy via Kubernetes
+start_minikube() {
+  check_docker
+  echo -e "${GREEN}Starting in Minikube mode...${NC}"
+  minikube start
+  echo -e "${BLUE}Switching Docker CLI to Minikube daemon...${NC}"
+  eval "$(minikube -p minikube docker-env)"
+  echo -e "${YELLOW}Building backend image into Minikube...${NC}"
+  docker build -t backend:latest -f backend/Dockerfile backend
+  echo -e "${YELLOW}Building frontend image into Minikube...${NC}"
+  docker build -t frontend:latest -f frontend/Dockerfile frontend
+  echo -e "${YELLOW}Applying Kubernetes manifests...${NC}"
+  kubectl apply -f k8s/
+  echo -e "${GREEN}Waiting for backend deployment...${NC}"
+  kubectl rollout status deployment/backend
+  echo -e "${GREEN}Waiting for frontend deployment...${NC}"
+  kubectl rollout status deployment/frontend
+  echo -e "${GREEN}Opening frontend service in browser...${NC}"
+  minikube service frontend-service
+}
+
+# Auto-select mode if first argument provided
+if [ "$#" -gt 0 ]; then
+  case "$1" in
+    docker) check_docker; start_docker; exit 0;;
+    local) start_local; exit 0;;
+    minikube) check_docker; start_minikube; exit 0;;
+    *) echo -e "${RED}Unknown mode '$1'. Valid options: docker, local, minikube.${NC}"; exit 1;;
+  esac
+fi
+
 # Show menu
 echo "Please select an option:"
 echo "1) Start in Docker mode (full containerized environment)"
-echo "2) Start in local development mode (database in Docker, backend & frontend local)"
-echo "3) Exit"
-
-read -p "Enter your choice (1-3): " choice
+echo "2) Start in local development mode (DB in Docker, backend & frontend local)"
+echo "3) Start in Minikube mode (build local images into Minikube & deploy)"
+echo "4) Exit"
+ 
+read -p "Enter your choice (1-4): " choice
 
 case $choice in
   1)
@@ -78,6 +110,10 @@ case $choice in
     start_local
     ;;
   3)
+    check_docker
+    start_minikube
+    ;;
+  4)
     echo -e "${BLUE}Exiting...${NC}"
     exit 0
     ;;
