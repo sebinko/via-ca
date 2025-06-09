@@ -28,14 +28,16 @@ jobs:
           dotnet test backend.Tests/backend.Tests.csproj \
             --configuration Release \
             --no-build \
-            --verbosity normal \
-            --logger:"console;verbosity=detailed" \
+            --verbosity detailed \
+            --logger trx \
+            --results-directory ./TestResults \
+            -- MSTest.PrintTestResults=true \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             /p:CoverletOutput=./coverage/ \
             /p:IncludeTestSummary=true \
             /p:ThresholdType=line \
-            /p:Threshold=55
+            /p:Threshold=80
 
   frontend:
     name: Frontend
