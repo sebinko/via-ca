@@ -11,6 +11,8 @@ builder.Services.AddDbContext<backend.Data.ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+// Register services
+builder.Services.AddScoped<backend.Services.IStoryItemService, backend.Services.StoryItemService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
