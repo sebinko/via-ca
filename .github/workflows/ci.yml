@@ -28,6 +28,8 @@ jobs:
           dotnet test backend.Tests/backend.Tests.csproj \
             --configuration Release \
             --no-build \
+            --verbosity normal \
+            --logger:"console;verbosity=detailed" \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             /p:CoverletOutput=./coverage/ \
