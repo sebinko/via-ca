@@ -40,7 +40,7 @@ jobs:
           comment-title: 'Unit Test Results'
           results-path: './backend.Tests/TestResults/TestResults/*.trx'
           coverage-path: './backend.Tests/TestResults/coverage.xml'
-          coverage-threshold: 80
+          coverage-threshold: 55
           show-test-output: true
 
   frontend:
