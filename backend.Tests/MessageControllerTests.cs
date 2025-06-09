@@ -28,8 +28,11 @@ namespace backend.Tests
             Assert.NotNull(okResult.Value);
 
             // Assert payload contains expected message
-            var payload = okResult.Value as dynamic;
-            Assert.Equal("Hello from C# backend!", (string)payload.message);
+            var payloadObj = okResult.Value;
+            var messageProp = payloadObj.GetType().GetProperty("message") ?? payloadObj.GetType().GetProperty("Message");
+            Assert.NotNull(messageProp);
+            var messageValue = messageProp.GetValue(payloadObj) as string;
+            Assert.Equal("Hello from C# backend!", messageValue);
         }
     }
 }
