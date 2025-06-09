@@ -38,8 +38,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-title: 'Unit Test Results'
-          results-path: './backend.Tests/TestResults/*.trx'
-          coverage-path: './backend.Tests/TestResults/coverage.xml'
+          results-path: './TestResults/*.trx'
+          coverage-path: './TestResults/coverage.xml'
           coverage-threshold: 80
           show-test-output: true
 
