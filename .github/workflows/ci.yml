@@ -28,19 +28,18 @@ jobs:
           mkdir -p TestResults
           dotnet test backend.Tests/backend.Tests.csproj \
             --configuration Release \
-            --no-build \
             --logger "trx;LogFileName=TestResults/results.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             /p:CoverletOutput=TestResults/coverage.xml
 
       - name: Report test results
-        uses: bibipkins/dotnet-test-reporter@v1.4.0
+        uses: bibipkins/dotnet-test-reporter@v1.5.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-title: 'Unit Test Results'
-          results-path: './TestResults/*.trx'
-          coverage-path: './TestResults/coverage.xml'
+          results-path: './backend.Tests/TestResults/*.trx'
+          coverage-path: './backend.Tests/TestResults/coverage.xml'
           coverage-threshold: 80
           show-test-output: true
 
