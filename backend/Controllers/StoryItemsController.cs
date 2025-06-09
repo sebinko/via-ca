@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using backend.Data;
 using backend.Models;
+using backend.Services;
+using Microsoft.Extensions.Logging;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class StoryItemsController : ControllerBase
-{
-    private readonly ApplicationDbContext _context;
+{    
+    private readonly IStoryItemService _service;
     private readonly ILogger<StoryItemsController> _logger;
 
-    public StoryItemsController(ApplicationDbContext context, ILogger<StoryItemsController> logger)
+    public StoryItemsController(IStoryItemService service, ILogger<StoryItemsController> logger)
     {
-        _context = context;
+        _service = service;
         _logger = logger;
     }
 
@@ -23,7 +23,8 @@ public class StoryItemsController : ControllerBase
     public async Task<ActionResult<IEnumerable<StoryItem>>> GetStoryItems()
     {
         _logger.LogInformation("Getting all story items");
-        return await _context.StoryItems.OrderByDescending(s => s.CreatedAt).ToListAsync();
+        var items = await _service.GetAllAsync();
+        return Ok(items);
     }
 
     // GET: api/StoryItems/5
@@ -31,7 +32,7 @@ public class StoryItemsController : ControllerBase
     public async Task<ActionResult<StoryItem>> GetStoryItem(int id)
     {
         _logger.LogInformation("Getting story item with id {Id}", id);
-        var storyItem = await _context.StoryItems.FindAsync(id);
+        var storyItem = await _service.GetByIdAsync(id);
 
         if (storyItem == null)
         {
@@ -39,7 +40,7 @@ public class StoryItemsController : ControllerBase
             return NotFound();
         }
 
-        return storyItem;
+        return Ok(storyItem);
     }
 
     // POST: api/StoryItems
@@ -47,12 +48,10 @@ public class StoryItemsController : ControllerBase
     public async Task<ActionResult<StoryItem>> PostStoryItem(StoryItem storyItem)
     {
         _logger.LogInformation("Creating a new story item");
-        storyItem.CreatedAt = DateTime.UtcNow;
-        _context.StoryItems.Add(storyItem);
-        await _context.SaveChangesAsync();
+        var created = await _service.CreateAsync(storyItem);
 
         _logger.LogInformation("Story item created with id {Id}", storyItem.Id);
-        return CreatedAtAction(nameof(GetStoryItem), new { id = storyItem.Id }, storyItem);
+        return CreatedAtAction(nameof(GetStoryItem), new { id = created.Id }, created);
     }
 
     // PUT: api/StoryItems/5
@@ -65,28 +64,14 @@ public class StoryItemsController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(storyItem).State = EntityState.Modified;
-        // Preserve the original creation date
-        _context.Entry(storyItem).Property(x => x.CreatedAt).IsModified = false;
-
-        try
+        var updated = await _service.UpdateAsync(storyItem);
+        if (!updated)
         {
-            _logger.LogInformation("Updating story item with id {Id}", id);
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!StoryItemExists(id))
-            {
-                _logger.LogWarning("Story item with id {Id} not found during update", id);
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            _logger.LogWarning("Story item with id {Id} not found during update", id);
+            return NotFound();
         }
 
+        _logger.LogInformation("Story item with id {Id} updated successfully", id);
         return NoContent();
     }
 
@@ -95,22 +80,14 @@ public class StoryItemsController : ControllerBase
     public async Task<IActionResult> DeleteStoryItem(int id)
     {
         _logger.LogInformation("Deleting story item with id {Id}", id);
-        var storyItem = await _context.StoryItems.FindAsync(id);
-        if (storyItem == null)
+        var deleted = await _service.DeleteAsync(id);
+        if (!deleted)
         {
             _logger.LogWarning("Story item with id {Id} not found during delete attempt", id);
             return NotFound();
         }
 
-        _context.StoryItems.Remove(storyItem);
-        await _context.SaveChangesAsync();
-
         _logger.LogInformation("Story item with id {Id} deleted successfully", id);
         return NoContent();
-    }
-
-    private bool StoryItemExists(int id)
-    {
-        return _context.StoryItems.Any(e => e.Id == id);
     }
 }
